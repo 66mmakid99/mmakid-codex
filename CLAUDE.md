@@ -1,6 +1,15 @@
-# CLAUDE.md - AI Assistant Guide for mmakid-codex
+# CLAUDE.md - 격투가 인명사전 AI 어시스턴트 가이드
 
 격투가 인명사전(Fighter Encyclopedia) 프로젝트를 위한 AI 어시스턴트 가이드입니다.
+
+## 언어 규칙
+
+- **모든 문서는 한국어로 작성한다**
+- **모든 대화는 한국어로 진행한다**
+- 코드 주석: 한국어 권장 (복잡한 로직 설명 시)
+- 커밋 메시지: 한국어로 작성
+- 변수/함수명: 영어 (camelCase)
+- UI 텍스트: 한국어
 
 ## 프로젝트 개요
 
