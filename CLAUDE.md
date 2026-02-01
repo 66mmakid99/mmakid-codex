@@ -18,30 +18,55 @@
 **Deployment:** Cloudflare Pages
 **Status:** 초기 개발 단계
 
+### 핵심 기능
+1. **타임라인 뷰** - 선수의 커리어를 시간순으로 시각화
+2. **타임라인 병합 비교** - 두 선수의 타임라인을 하나로 병합하여 비교/대조
+3. **AI 맥락 연결** - 인물×인물, 인물×대회, 인물×사건 등 파편화된 정보를 AI가 연결
+4. **반응형 디자인** - 모바일/웹 최적화
+
 ### 참고 데이터 소스
 - **BJJ Heroes** (https://www.bjjheroes.com/) - BJJ 선수 정보
 - **Sherdog** (https://www.sherdog.com/events) - MMA 경기 기록
 - **Tapology** (https://www.tapology.com/) - MMA 선수 및 이벤트 정보
 
+## 기술 스택
+
+```
+Frontend:     SvelteKit 2 + Svelte 5 + TypeScript
+Styling:      Tailwind CSS 4
+AI/Backend:   Cloudflare Workers + Workers AI
+Database:     Cloudflare D1 (추후)
+Deployment:   Cloudflare Pages
+```
+
 ## 프로젝트 구조
 
 ```
 mmakid-codex/
-├── CLAUDE.md              # AI 어시스턴트 가이드 (이 파일)
-├── README.md              # 프로젝트 설명
-├── src/                   # 소스 코드
-│   ├── components/        # UI 컴포넌트
-│   │   ├── Timeline/      # 타임라인 컴포넌트
-│   │   ├── FighterCard/   # 선수 카드 컴포넌트
-│   │   └── FightRecord/   # 경기 기록 컴포넌트
-│   ├── pages/             # 페이지
-│   ├── utils/             # 유틸리티 함수
-│   └── data/              # 정적 데이터
-├── data/                  # 선수/이벤트 데이터
-│   ├── fighters/          # 선수별 JSON/MD 파일
-│   └── events/            # 이벤트 데이터
-├── public/                # 정적 파일 (이미지 등)
-└── dist/                  # 빌드 결과물
+├── CLAUDE.md                  # AI 어시스턴트 가이드 (이 파일)
+├── README.md                  # 프로젝트 설명
+├── package.json               # 의존성 및 스크립트
+├── svelte.config.js           # SvelteKit 설정 (Cloudflare 어댑터)
+├── tailwind.config.js         # Tailwind CSS 설정
+├── vite.config.ts             # Vite 설정
+├── tsconfig.json              # TypeScript 설정
+├── src/
+│   ├── app.css                # 글로벌 스타일 (Tailwind)
+│   ├── app.html               # HTML 템플릿
+│   ├── app.d.ts               # 앱 타입 정의
+│   ├── lib/
+│   │   ├── types/index.ts     # TypeScript 타입 정의
+│   │   ├── components/        # 재사용 컴포넌트
+│   │   └── utils/             # 유틸리티 함수
+│   └── routes/                # SvelteKit 라우트
+│       ├── +layout.svelte     # 공통 레이아웃
+│       ├── +page.svelte       # 홈페이지
+│       ├── fighters/          # 선수 관련 페이지
+│       └── compare/           # 비교 페이지
+├── data/
+│   ├── fighters/              # 선수 데이터 (JSON)
+│   └── events/                # 이벤트 데이터 (JSON)
+└── static/                    # 정적 파일 (이미지 등)
 ```
 
 ## 핵심 도메인 용어
@@ -58,13 +83,14 @@ mmakid-codex/
 | Title Fight | 타이틀전 |
 | Main Event | 메인 이벤트 |
 
-### 데이터 타입
+### 주요 타입 (src/lib/types/index.ts)
 | 타입 | 용도 |
 |-----|------|
 | `Fighter` | 선수 프로필 정보 |
 | `TimelineEvent` | 타임라인 이벤트 (경기, 부상, 뉴스 등) |
-| `Fight` | 개별 경기 정보 |
-| `Event` | 대회/이벤트 정보 |
+| `MMAEvent` | 대회/이벤트 정보 |
+| `MergedTimelineItem` | 병합된 타임라인 (비교 뷰용) |
+| `AIAnalysisRequest/Response` | AI 분석 요청/응답 |
 
 ## 개발 워크플로우
 
@@ -73,8 +99,11 @@ mmakid-codex/
 # 의존성 설치
 npm install
 
-# 개발 서버
+# 개발 서버 (http://localhost:5173)
 npm run dev
+
+# 타입 체크
+npm run check
 
 # 빌드
 npm run build
@@ -90,7 +119,7 @@ npm run preview
 - `data/*` - 데이터 추가/수정
 - `claude/*` - AI 어시스턴트 작업 브랜치
 
-### 커밋 컨벤션
+### 커밋 컨벤션 (한국어)
 ```
 feat: 새 기능 추가
 fix: 버그 수정
@@ -101,17 +130,53 @@ docs: 문서 수정
 chore: 기타 작업
 ```
 
+## SvelteKit 컨벤션
+
+### 파일 명명 규칙
+- 라우트: `+page.svelte`, `+layout.svelte`, `+server.ts`
+- 컴포넌트: `PascalCase.svelte` (예: `Timeline.svelte`)
+- 유틸리티: `camelCase.ts` (예: `formatDate.ts`)
+
+### Svelte 5 문법
+```svelte
+<script lang="ts">
+  // props 선언
+  let { fighter, onSelect } = $props<{
+    fighter: Fighter;
+    onSelect: (id: string) => void;
+  }>();
+
+  // 상태
+  let count = $state(0);
+
+  // 파생 상태
+  let doubled = $derived(count * 2);
+
+  // 이펙트
+  $effect(() => {
+    console.log('count changed:', count);
+  });
+</script>
+```
+
+### 데이터 로딩
+```typescript
+// +page.server.ts
+import type { PageServerLoad } from './$types';
+
+export const load: PageServerLoad = async ({ params }) => {
+  const fighter = await getFighter(params.id);
+  return { fighter };
+};
+```
+
 ## 데이터 스키마
 
-### Fighter (선수)
+### Fighter (선수) - data/fighters/*.json
 ```json
 {
   "id": "fighter-slug",
-  "name": {
-    "ko": "한글명",
-    "en": "English Name",
-    "native": "원어 이름"
-  },
+  "name": { "ko": "한글명", "en": "English Name", "native": "원어이름" },
   "nickname": "별명",
   "nationality": "KR",
   "birthDate": "YYYY-MM-DD",
@@ -119,30 +184,25 @@ chore: 기타 작업
   "weight": 77,
   "weightClass": "welterweight",
   "team": "소속 팀",
-  "style": ["wrestling", "bjj", "muay-thai"],
-  "record": {
-    "wins": 20,
-    "losses": 5,
-    "draws": 0,
-    "nc": 1
-  }
+  "style": ["wrestling", "bjj"],
+  "record": { "wins": 20, "losses": 5, "draws": 0, "nc": 1 },
+  "timeline": [ /* TimelineEvent[] */ ]
 }
 ```
 
 ### TimelineEvent (타임라인)
 ```json
 {
+  "id": "unique-id",
   "date": "YYYY-MM-DD",
   "type": "fight|injury|news|title|transfer|debut|retirement",
   "title": "이벤트 제목",
   "description": "상세 설명",
   "result": "win|loss|draw|nc",
-  "method": "KO/TKO|Submission|Decision|DQ",
-  "round": 2,
-  "time": "3:45",
-  "opponent": "opponent-fighter-id",
-  "event": "UFC 300",
-  "sources": ["URL1", "URL2"]
+  "method": "KO|TKO|Submission|Decision",
+  "opponentName": "상대 선수",
+  "eventName": "UFC 300",
+  "sources": ["URL"]
 }
 ```
 
@@ -167,30 +227,30 @@ light-heavyweight, heavyweight
    - 시간대: UTC 기준
    - 이벤트는 시간순 정렬
 
-3. **다국어 처리**
-   - 선수 이름은 `ko`, `en`, `native` 모두 제공
-   - UI 텍스트는 한국어 우선
+3. **Svelte 5 문법 사용**
+   - `$props()`, `$state()`, `$derived()`, `$effect()` 사용
+   - 레거시 문법 (`export let`, `$:`) 사용 금지
 
-4. **이미지 처리**
-   - 경로: `/public/images/fighters/{fighter-id}.jpg`
-   - 크기: 최대 500x500px 권장
-   - 저작권 주의
+4. **Tailwind CSS 사용**
+   - 인라인 스타일 대신 Tailwind 클래스 사용
+   - 반응형: `sm:`, `md:`, `lg:` 접두사 활용
+   - 다크모드: `dark:` 접두사 활용
 
 ### 코드 작성 규칙
 
 1. **컴포넌트 구조**
-   - 재사용 가능한 컴포넌트로 분리
-   - Props 타입 명시
+   - 재사용 가능한 컴포넌트는 `src/lib/components/`에 배치
+   - Props 타입 명시 필수
    - 반응형 디자인 적용
 
-2. **데이터 처리**
-   - 데이터 fetch 시 에러 핸들링
-   - 로딩 상태 표시
-   - 캐싱 고려
+2. **타입 안전성**
+   - 모든 함수에 타입 명시
+   - `any` 타입 사용 금지
+   - 타입은 `src/lib/types/index.ts`에 정의
 
 3. **성능 최적화**
    - 이미지 lazy loading
-   - 컴포넌트 lazy loading
+   - 대용량 데이터 페이지네이션
    - 불필요한 리렌더링 방지
 
 ### 피해야 할 것
@@ -200,6 +260,7 @@ light-heavyweight, heavyweight
 - 개인정보 노출 (연락처, 주소 등)
 - 과도한 외부 의존성 추가
 - 하드코딩된 데이터 (별도 파일로 분리)
+- Svelte 4 레거시 문법 사용
 
 ## Cloudflare Pages 배포
 
@@ -210,8 +271,8 @@ light-heavyweight, heavyweight
 ### 빌드 설정
 ```
 Build command: npm run build
-Build output: dist
-Node.js: 18+
+Build output directory: .svelte-kit/cloudflare
+Node.js version: 18+
 ```
 
 ### 환경 변수
@@ -219,47 +280,38 @@ Node.js: 18+
 NODE_VERSION=18
 ```
 
-## 테스트
-
-```bash
-# 단위 테스트
-npm run test
-
-# E2E 테스트
-npm run test:e2e
-
-# 타입 체크
-npm run typecheck
-```
-
 ## 자주 하는 작업
 
 ### 새 선수 추가
 1. `data/fighters/{fighter-id}.json` 생성
 2. 기본 프로필 정보 입력
-3. 타임라인 이벤트 추가
-4. 이미지 추가 (선택)
+3. `timeline` 배열에 이벤트 추가
+4. 이미지 추가 (선택): `static/images/fighters/{fighter-id}.jpg`
 
-### 경기 결과 업데이트
-1. 해당 선수의 JSON 파일 수정
-2. `record` 필드 업데이트
-3. `timeline`에 경기 이벤트 추가
+### 새 페이지 추가
+1. `src/routes/페이지명/+page.svelte` 생성
+2. 필요시 `+page.server.ts`로 데이터 로딩
+3. `+layout.svelte` 내비게이션에 링크 추가
 
-### 새 이벤트 추가
-1. `data/events/{event-slug}.json` 생성
-2. 경기 목록 및 결과 입력
-3. 관련 선수 타임라인 업데이트
+### 새 컴포넌트 추가
+1. `src/lib/components/ComponentName.svelte` 생성
+2. Props 타입 정의
+3. 필요시 `src/lib/index.ts`에 export 추가
 
 ## 문제 해결
 
 ### 빌드 실패
+- `npm run check`로 타입 에러 확인
 - Node.js 버전 확인 (18+)
-- `npm ci`로 clean install
-- TypeScript 에러 확인
+- `rm -rf node_modules && npm install`로 재설치
+
+### Tailwind 스타일 미적용
+- `app.css`에 `@import 'tailwindcss';` 확인
+- `tailwind.config.js`의 `content` 경로 확인
 
 ### 데이터 오류
-- JSON 문법 검증 (`npm run validate-data`)
-- 날짜 형식 확인
+- JSON 문법 검증
+- 날짜 형식 확인 (YYYY-MM-DD)
 - ID 중복 확인
 
 ---

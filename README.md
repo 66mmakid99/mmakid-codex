@@ -10,6 +10,12 @@
 - 주요 사건, 이슈, 뉴스를 시간순으로 정리
 - 선수 간 대전 기록 및 관계 파악
 
+### 핵심 기능
+1. **타임라인 뷰** - 선수의 커리어를 시간순으로 시각화
+2. **타임라인 병합 비교** - 두 선수의 타임라인을 하나로 병합하여 비교/대조
+3. **AI 맥락 연결** - 인물×인물, 인물×대회, 인물×사건 등 파편화된 정보를 AI가 연결
+4. **반응형 디자인** - 모바일/웹 최적화
+
 ### 참고 데이터 소스
 | 사이트 | URL | 주요 데이터 |
 |--------|-----|------------|
@@ -17,117 +23,48 @@
 | Sherdog | https://www.sherdog.com/events | MMA 경기 기록, 이벤트 정보, 선수 통계 |
 | Tapology | https://www.tapology.com/ | MMA 선수 정보, 체급 랭킹, 팀 정보 |
 
-## 주요 기능
-
-### 1. 선수 프로필
-- 기본 정보 (이름, 국적, 생년월일, 신장, 체중, 체급)
-- 소속 팀/체육관
-- 격투 스타일 (스트라이커, 그래플러, 올라운더 등)
-- 사진 및 별명
-
-### 2. 타임라인 뷰
-```
-2024 ──●── UFC 300 출전, TKO 승리
-       │
-2023 ──●── 체급 변경 (라이트급 → 웰터급)
-       ●── UFC 285 출전, 판정 패배
-       │
-2022 ──●── 부상으로 6개월 공백
-       ●── 도핑 적발 논란
-       │
-2021 ──●── UFC 타이틀 획득
-```
-
-### 3. 경기 전적
-- 전체 전적 (승-패-무-NC)
-- 승리 방식 분석 (KO/TKO, 서브미션, 판정)
-- 상대 선수 정보 및 링크
-- 대회/이벤트 정보
-
-### 4. 사건/이슈 트래킹
-- 부상 기록
-- 이적/팀 변경
-- 논란 및 뉴스
-- 타이틀 획득/방어/상실
-- 은퇴/복귀
-
 ## 기술 스택
 
 ### Frontend
-- **Framework:** [TBD - React/Vue/Svelte 등]
-- **Styling:** [TBD - Tailwind CSS 권장]
-- **타임라인:** 커스텀 컴포넌트 또는 라이브러리
+- **Framework:** SvelteKit 2 + Svelte 5
+- **Styling:** Tailwind CSS 4
+- **Language:** TypeScript
 
-### Backend / Data
-- **데이터 저장:** JSON/Markdown 기반 정적 데이터 또는 CMS
-- **API:** 필요시 Cloudflare Workers 활용
+### Backend / AI
+- **Serverless:** Cloudflare Workers
+- **AI:** Cloudflare Workers AI / Anthropic API
+- **Database:** Cloudflare D1 (추후 확장용)
 
 ### 배포
 - **플랫폼:** Cloudflare Pages
-- **도메인:** [TBD]
+- **어댑터:** @sveltejs/adapter-cloudflare
 
 ## 프로젝트 구조
 
 ```
 mmakid-codex/
-├── README.md              # 프로젝트 설명
-├── CLAUDE.md              # AI 어시스턴트 가이드
-├── src/                   # 소스 코드
-│   ├── components/        # UI 컴포넌트
-│   │   ├── Timeline/      # 타임라인 컴포넌트
-│   │   ├── FighterCard/   # 선수 카드
-│   │   └── FightRecord/   # 경기 기록
-│   ├── pages/             # 페이지
-│   └── data/              # 정적 데이터
-├── data/                  # 선수 데이터 (JSON/MD)
-│   ├── fighters/          # 선수별 데이터
-│   └── events/            # 이벤트 데이터
-├── public/                # 정적 파일
-└── dist/                  # 빌드 결과물
-```
-
-## 데이터 스키마
-
-### 선수 (Fighter)
-```json
-{
-  "id": "fighter-slug",
-  "name": {
-    "ko": "한글 이름",
-    "en": "English Name",
-    "native": "Native Name"
-  },
-  "nickname": "별명",
-  "nationality": "KR",
-  "birthDate": "1990-01-01",
-  "height": 180,
-  "weight": 77,
-  "weightClass": "welterweight",
-  "team": "Team Name",
-  "style": ["wrestling", "bjj"],
-  "record": {
-    "wins": 20,
-    "losses": 5,
-    "draws": 0,
-    "nc": 1
-  },
-  "profileImage": "/images/fighters/fighter-slug.jpg"
-}
-```
-
-### 타임라인 이벤트 (Timeline Event)
-```json
-{
-  "date": "2024-03-15",
-  "type": "fight|injury|news|title|transfer",
-  "title": "이벤트 제목",
-  "description": "상세 설명",
-  "result": "win|loss|draw|nc",
-  "method": "KO/TKO|Submission|Decision",
-  "opponent": "opponent-slug",
-  "event": "UFC 300",
-  "sources": ["https://..."]
-}
+├── README.md                  # 프로젝트 설명
+├── CLAUDE.md                  # AI 어시스턴트 가이드
+├── package.json               # 의존성 및 스크립트
+├── svelte.config.js           # SvelteKit 설정
+├── tailwind.config.js         # Tailwind CSS 설정
+├── vite.config.ts             # Vite 설정
+├── tsconfig.json              # TypeScript 설정
+├── src/
+│   ├── app.css                # 글로벌 스타일
+│   ├── app.html               # HTML 템플릿
+│   ├── app.d.ts               # 앱 타입 정의
+│   ├── lib/
+│   │   ├── types/             # TypeScript 타입 정의
+│   │   ├── components/        # 재사용 컴포넌트
+│   │   └── utils/             # 유틸리티 함수
+│   └── routes/                # SvelteKit 라우트
+│       ├── +layout.svelte     # 공통 레이아웃
+│       └── +page.svelte       # 홈페이지
+├── data/
+│   ├── fighters/              # 선수 데이터 (JSON)
+│   └── events/                # 이벤트 데이터 (JSON)
+└── static/                    # 정적 파일 (이미지 등)
 ```
 
 ## 개발 시작하기
@@ -143,22 +80,60 @@ npm install
 # 개발 서버 실행
 npm run dev
 
+# 타입 체크
+npm run check
+
 # 빌드
 npm run build
 
-# Cloudflare Pages 배포
-npm run deploy
+# 프리뷰
+npm run preview
+```
+
+## 데이터 스키마
+
+### 선수 (Fighter)
+```typescript
+interface Fighter {
+  id: string;
+  name: { ko: string; en: string; native?: string };
+  nickname?: string;
+  nationality: string;
+  birthDate?: string;
+  height?: number;      // cm
+  weight?: number;      // kg
+  weightClass: WeightClass;
+  team?: string;
+  style?: string[];
+  record: { wins: number; losses: number; draws: number; nc: number };
+}
+```
+
+### 타임라인 이벤트 (TimelineEvent)
+```typescript
+interface TimelineEvent {
+  id: string;
+  fighterId: string;
+  date: string;         // YYYY-MM-DD
+  type: 'fight' | 'injury' | 'news' | 'title' | 'transfer' | 'debut' | 'retirement';
+  title: string;
+  description?: string;
+  result?: 'win' | 'loss' | 'draw' | 'nc';
+  method?: string;
+  opponentId?: string;
+  eventName?: string;
+  sources?: string[];
+}
 ```
 
 ## Cloudflare Pages 배포
 
-### 설정
-1. Cloudflare 대시보드에서 Pages 프로젝트 생성
-2. GitHub 저장소 연결
-3. 빌드 설정:
-   - Build command: `npm run build`
-   - Build output directory: `dist`
-   - Node.js version: 18+
+### 빌드 설정
+```
+Build command: npm run build
+Build output directory: .svelte-kit/cloudflare
+Node.js version: 18+
+```
 
 ### 환경 변수
 ```
@@ -167,26 +142,27 @@ NODE_VERSION=18
 
 ## 로드맵
 
-- [ ] 프로젝트 초기 설정 및 기술 스택 확정
+- [x] 프로젝트 초기 설정 및 기술 스택 확정
 - [ ] 기본 UI 컴포넌트 개발
 - [ ] 타임라인 컴포넌트 구현
 - [ ] 샘플 선수 데이터 추가
 - [ ] 검색 기능 구현
-- [ ] 선수 비교 기능
+- [ ] 타임라인 병합 비교 기능
+- [ ] AI 맥락 연결 기능
 - [ ] 다국어 지원 (한/영/일)
-- [ ] 모바일 반응형 디자인
+- [ ] 모바일 반응형 최적화
 - [ ] PWA 지원
 
 ## 기여하기
 
 1. 이슈 생성 또는 기존 이슈 확인
 2. 기능 브랜치 생성 (`feature/기능명`)
-3. 변경사항 커밋
+3. 변경사항 커밋 (한국어로 작성)
 4. Pull Request 생성
 
 ## 라이선스
 
-[TBD]
+MIT
 
 ---
 

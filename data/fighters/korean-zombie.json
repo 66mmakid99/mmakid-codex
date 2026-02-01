@@ -1,0 +1,105 @@
+{
+	"id": "korean-zombie",
+	"name": {
+		"ko": "정찬성",
+		"en": "Chan Sung Jung",
+		"native": "정찬성"
+	},
+	"nickname": "코리안 좀비",
+	"nationality": "KR",
+	"birthDate": "1987-03-17",
+	"height": 178,
+	"weight": 66,
+	"reach": 180,
+	"weightClass": "featherweight",
+	"team": "코리안 좀비 MMA",
+	"style": ["boxing", "wrestling", "bjj"],
+	"record": {
+		"wins": 17,
+		"losses": 7,
+		"draws": 0,
+		"nc": 0
+	},
+	"profileImage": "/images/fighters/korean-zombie.jpg",
+	"timeline": [
+		{
+			"id": "kz-debut",
+			"date": "2007-02-17",
+			"type": "debut",
+			"title": "프로 데뷔전",
+			"description": "Spirit MC 6에서 프로 데뷔, 1라운드 TKO 승"
+		},
+		{
+			"id": "kz-ufc-debut",
+			"date": "2011-03-26",
+			"type": "fight",
+			"title": "UFC 데뷔",
+			"description": "UFC Fight Night 24에서 더스틴 포이리에 상대로 UFC 데뷔",
+			"result": "loss",
+			"method": "Submission",
+			"round": 1,
+			"time": "3:23",
+			"opponentName": "더스틴 포이리에",
+			"eventName": "UFC Fight Night 24"
+		},
+		{
+			"id": "kz-twister",
+			"date": "2011-08-14",
+			"type": "fight",
+			"title": "UFC 최초 트위스터 서브미션",
+			"description": "레오나르도 가르시아를 트위스터로 제압. UFC 역사상 최초의 트위스터 승리",
+			"result": "win",
+			"method": "Submission",
+			"round": 2,
+			"time": "1:54",
+			"opponentName": "레오나르도 가르시아",
+			"eventName": "UFC 139"
+		},
+		{
+			"id": "kz-aldo",
+			"date": "2013-08-03",
+			"type": "fight",
+			"title": "UFC 페더급 타이틀전",
+			"description": "호세 알도와 UFC 페더급 타이틀전. 4라운드 TKO 패배",
+			"result": "loss",
+			"method": "TKO",
+			"round": 4,
+			"time": "0:59",
+			"opponentName": "호세 알도",
+			"eventName": "UFC 163"
+		},
+		{
+			"id": "kz-military",
+			"date": "2014-09-01",
+			"type": "news",
+			"title": "군 입대",
+			"description": "대한민국 의무 군복무로 약 2년간 활동 중단"
+		},
+		{
+			"id": "kz-return",
+			"date": "2017-02-04",
+			"type": "fight",
+			"title": "UFC 복귀전",
+			"description": "군 복무 후 복귀. 데니스 베르뮤데즈 상대 1라운드 TKO 승",
+			"result": "win",
+			"method": "TKO",
+			"round": 1,
+			"time": "3:25",
+			"opponentName": "데니스 베르뮤데즈",
+			"eventName": "UFC Fight Night 104"
+		},
+		{
+			"id": "kz-volkanovski",
+			"date": "2022-04-09",
+			"type": "fight",
+			"title": "UFC 페더급 타이틀전",
+			"description": "알렉산더 볼카노프스키와 UFC 페더급 타이틀전. 4라운드 TKO 패배",
+			"result": "loss",
+			"method": "TKO",
+			"round": 4,
+			"time": "0:45",
+			"opponentName": "알렉산더 볼카노프스키",
+			"eventName": "UFC 273"
+		}
+	]
+}

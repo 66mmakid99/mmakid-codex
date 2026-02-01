@@ -1,0 +1,54 @@
+@import 'tailwindcss';
+
+/* 커스텀 폰트 (Pretendard) */
+@font-face {
+	font-family: 'Pretendard';
+	font-weight: 400;
+	font-display: swap;
+	src: url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard-dynamic-subset.css');
+}
+
+/* 기본 스타일 */
+:root {
+	--color-primary: #2563eb;
+	--color-secondary: #dc2626;
+	--color-background: #f9fafb;
+	--color-text: #1f2937;
+}
+
+/* 다크 모드 */
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-background: #111827;
+		--color-text: #f9fafb;
+	}
+}
+
+html {
+	scroll-behavior: smooth;
+}
+
+body {
+	font-family: 'Pretendard', system-ui, sans-serif;
+	background-color: var(--color-background);
+	color: var(--color-text);
+}
+
+/* 타임라인 기본 스타일 */
+.timeline-line {
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 2px;
+	height: 100%;
+	background: linear-gradient(to bottom, var(--color-primary), var(--color-secondary));
+}
+
+.timeline-dot {
+	width: 12px;
+	height: 12px;
+	border-radius: 50%;
+	background-color: var(--color-primary);
+	border: 2px solid white;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
